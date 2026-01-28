@@ -1,0 +1,30 @@
+
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: mini_crm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mini_crm_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: mini_crm_api
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mini_crm_db
+      JWT_SECRET: super-secret-key
+    ports:
+      - "3000:3000"
+    command: sh -c "npx prisma db push && node dist/main.js"
+
+volumes:
+  postgres_data:
