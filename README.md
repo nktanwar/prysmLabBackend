@@ -1,151 +1,178 @@
-# Mini CRM Backend
+# Docker & Render Deployment Guide (Mini CRM Backend)
 
-A production-style backend service built with **NestJS**, **PostgreSQL**, and **Prisma ORM**, implementing secure authentication, role-based authorization, and CRUD APIs for users, customers, and tasks.
+This file documents how to run the Mini CRM backend using Docker locally
+and deploy it to Render. All commands below are shell commands.
 
-This project was built as part of the **Prysm Labs – Backend Developer Intern Assignment**.
+----------------------------------------------------------------
+DOCKER SETUP (LOCAL)
+----------------------------------------------------------------
 
----
+1. Create Dockerfile
 
-## 🚀 Tech Stack
+File: Dockerfile
 
-- **NestJS** (TypeScript)
-- **PostgreSQL**
-- **Prisma ORM**
-- **JWT Authentication**
-- **Role-Based Access Control (RBAC)**
-- **Swagger API Documentation**
-- **Docker** (for deployment)
+Contents:
 
----
+```dockerfile
+# ---------- BUILD STAGE ----------
+FROM node:20-alpine AS builder
 
-## 🧩 Core Features
+WORKDIR /app
 
-### 🔐 Authentication & Authorization
-- JWT-based authentication
-- Secure password hashing using bcrypt
-- Role-based access control
-- Roles supported:
-  - `ADMIN`
-  - `EMPLOYEE`
+COPY package*.json ./
+RUN npm install
 
-### 👥 Users Module (ADMIN only)
-- View all users
-- View user by ID
-- Update user role
+COPY . .
+RUN npm run build
 
-### 🧑‍💼 Customers Module
-- Create, read, update, delete customers
-- Pagination support
-- Unique constraints on email and phone
-- Role rules:
-  - ADMIN: full access
-  - EMPLOYEE: read-only
+# ---------- PRODUCTION STAGE ----------
+FROM node:20-alpine
 
-### 🧾 Tasks Module
-- Create tasks and assign them to EMPLOYEEs
-- Tasks linked to customers
-- Task status management
-- Role rules:
-  - ADMIN: view all tasks, create tasks, update any task
-  - EMPLOYEE: view only assigned tasks, update own task status
+WORKDIR /app
 
----
-## Setup Instructions (Local)
+COPY package*.json ./
+RUN npm install --omit=dev
 
-1. Clone the repository
-git clone <YOUR_GITHUB_REPO_URL>
-cd mini-crm-backend
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 
-2. Install dependencies
-npm install
+EXPOSE 3000
 
-3. Environment variables
-cp .env.example .env
-Update values as needed.
+CMD ["node", "dist/main.js"]
+```
 
-4. Database setup
-Ensure PostgreSQL is running, then run:
-npx prisma db push
+----------------------------------------------------------------
 
-5. Start the server
-npm run start:dev
+2. Create docker-compose.yml
 
-Server will run on:
-http://localhost:3000
+File: docker-compose.yml
 
-## Swagger API Documentation
+Contents:
 
-Swagger is available at:
+```yaml
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: mini_crm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mini_crm_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: mini_crm_api
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/mini_crm_db
+      JWT_SECRET: super-secret-key
+    ports:
+      - "3000:3000"
+    command: sh -c "npx prisma db push && node dist/main.js"
+
+volumes:
+  postgres_data:
+```
+
+----------------------------------------------------------------
+
+3. Run Docker locally
+
+Shell commands:
+
+```bash
+docker compose up --build
+```
+
+Expected output:
+- PostgreSQL starts
+- Prisma runs db push
+- NestJS starts on port 3000
+
+Swagger URL (local):
+
 http://localhost:3000/api
 
-How to authorize in Swagger:
-- Login using /auth/login
-- Copy the accessToken
-- Click Authorize (lock icon)
-- Paste token as:
-Bearer <your_token>
+Stop containers:
 
-## Demo Credentials (For Testing)
+```bash
+Ctrl + C
+```
 
-These are demo/testing credentials only.
+----------------------------------------------------------------
+RENDER DEPLOYMENT
+----------------------------------------------------------------
 
-ADMIN
-Email: admin@test.com
-Password: password123
+1. Push Docker files to GitHub
 
-EMPLOYEE
-Email: employee2@test.com
-Password: password123
+Shell commands:
 
-## Sample Curl Commands
+```bash
+git add Dockerfile docker-compose.yml
+git commit -m "Add Docker support for production deployment"
+git push origin main
+```
 
-Register User
-curl -X POST http://localhost:3000/auth/register \
--H "Content-Type: application/json" \
--d '{
-  "name": "Admin User",
-  "email": "admin@test.com",
-  "password": "password123",
-  "role": "ADMIN"
-}'
+----------------------------------------------------------------
 
-Login
-curl -X POST http://localhost:3000/auth/login \
--H "Content-Type: application/json" \
--d '{
-  "email": "admin@test.com",
-  "password": "password123"
-}'
+2. Create Render Web Service
 
-Create Customer (ADMIN)
-curl -X POST http://localhost:3000/customers \
--H "Authorization: Bearer <ADMIN_TOKEN>" \
--H "Content-Type: application/json" \
--d '{
-  "name": "Acme Corp",
-  "email": "contact@acme.com",
-  "phone": "9999999999"
-}'
+Steps (Render UI):
 
-## Architecture Overview
-- Controllers: HTTP request handling
-- Services: business logic
-- DTOs: validation and request contracts
-- Guards: authentication and role-based authorization
-- Prisma: database access layer
+- Go to https://render.com
+- Login with GitHub
+- Click: New → Web Service
+- Select your repository
+- Environment: Docker
+- Branch: main
+- Root Directory: mini-crm-backend
+- Plan: Free
 
-Clean modular structure following NestJS best practices.
+----------------------------------------------------------------
 
-## Docker & Deployment
-Docker support is included.
-Render deployment URL will be added here:
-Deployment URL: <TO_BE_UPDATED>
+3. Configure Environment Variables (Render Dashboard)
 
-## Notes
-- Proper HTTP status codes are used: 400, 401, 403, 404, 409
-- Passwords are never returned in API responses
-- JWT payload includes user ID and role
+Add the following variables:
 
-## Author
-Built by Pankaj Rana
-Backend Developer Intern Candidate
+DATABASE_URL
+(postgres connection string from Render PostgreSQL)
+
+JWT_SECRET
+(super-secret-key)
+
+IMPORTANT:
+- Use Render’s managed PostgreSQL
+- Do NOT use docker-compose Postgres in production
+
+----------------------------------------------------------------
+
+4. Deployment Result
+
+After successful deploy, Render provides a URL like:
+
+https://mini-crm-backend.onrender.com
+
+Swagger URL:
+
+https://mini-crm-backend.onrender.com/api
+
+----------------------------------------------------------------
+
+5. Update README.md (after deploy)
+
+Add:
+
+Deployment URL: https://mini-crm-backend.onrender.com
+Swagger URL: https://mini-crm-backend.onrender.com/api
+
+----------------------------------------------------------------
+END OF FILE
+----------------------------------------------------------------
