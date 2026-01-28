@@ -156,7 +156,7 @@ Clean modular structure following NestJS best practices.
 ## Docker & Deployment
 Docker support is included.
 Render deployment URL will be added here:
-Deployment URL: <TO_BE_UPDATED>
+Deployment URL: https://prysmlabbackend.onrender.com/api
 
 ## Notes
 - Proper HTTP status codes are used: 400, 401, 403, 404, 409
