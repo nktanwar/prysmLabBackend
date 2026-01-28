@@ -4,6 +4,9 @@ A production-style backend service built with **NestJS**, **PostgreSQL**, and **
 
 This project was built as part of the **Prysm Labs – Backend Developer Intern Assignment**.
 
+**Deployment URL: https://prysmlabbackend.onrender.com/api**
+
+
 ---
 
 ## 🚀 Tech Stack
@@ -54,7 +57,7 @@ This project was built as part of the **Prysm Labs – Backend Developer Intern 
 
 ### 1. Clone the repository
 ```bash
-git clone <https://github.com/nktanwar/prysmLabBackend.git>
+git clone https://github.com/nktanwar/prysmLabBackend.git
 cd mini-crm-backend
 ```
 
