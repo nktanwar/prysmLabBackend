@@ -54,28 +54,33 @@ This project was built as part of the **Prysm Labs – Backend Developer Intern 
 
 1. Clone the repository
 ```bash
-git clone <YOUR_GITHUB_REPO_URL>
+git clone <https://github.com/nktanwar/prysmLabBackend.git>
 cd mini-crm-backend
+```
 
 2. Install dependencies
 
 ```bash
 npm install
+```
 
 3. Environment variables
 
 ```bash
 cp .env.example .env
+```
 Update values as needed.
 
 4. Database setup
 Ensure PostgreSQL is running, then run:
 ```bash
 npx prisma db push
+```
 
 5. Start the server
 ```bash
 npm run start:dev
+```
 
 Server will run on:
 http://localhost:3000
@@ -116,7 +121,7 @@ curl -X POST http://localhost:3000/auth/register \
   "password": "password123",
   "role": "ADMIN"
 }'
-
+```
 Login
 ```bash
 curl -X POST http://localhost:3000/auth/login \
@@ -125,6 +130,7 @@ curl -X POST http://localhost:3000/auth/login \
   "email": "admin@test.com",
   "password": "password123"
 }'
+```
 
 Create Customer (ADMIN)
 ```bash
@@ -136,6 +142,7 @@ curl -X POST http://localhost:3000/customers \
   "email": "contact@acme.com",
   "phone": "9999999999"
 }'
+```
 
 ## Architecture Overview
 - Controllers: HTTP request handling
