@@ -1,98 +1,151 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Mini CRM Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A production-style backend service built with **NestJS**, **PostgreSQL**, and **Prisma ORM**, implementing secure authentication, role-based authorization, and CRUD APIs for users, customers, and tasks.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project was built as part of the **Prysm Labs – Backend Developer Intern Assignment**.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Tech Stack
 
-## Project setup
+- **NestJS** (TypeScript)
+- **PostgreSQL**
+- **Prisma ORM**
+- **JWT Authentication**
+- **Role-Based Access Control (RBAC)**
+- **Swagger API Documentation**
+- **Docker** (for deployment)
 
-```bash
-$ npm install
-```
+---
 
-## Compile and run the project
+## 🧩 Core Features
 
-```bash
-# development
-$ npm run start
+### 🔐 Authentication & Authorization
+- JWT-based authentication
+- Secure password hashing using bcrypt
+- Role-based access control
+- Roles supported:
+  - `ADMIN`
+  - `EMPLOYEE`
 
-# watch mode
-$ npm run start:dev
+### 👥 Users Module (ADMIN only)
+- View all users
+- View user by ID
+- Update user role
 
-# production mode
-$ npm run start:prod
-```
+### 🧑‍💼 Customers Module
+- Create, read, update, delete customers
+- Pagination support
+- Unique constraints on email and phone
+- Role rules:
+  - ADMIN: full access
+  - EMPLOYEE: read-only
 
-## Run tests
+### 🧾 Tasks Module
+- Create tasks and assign them to EMPLOYEEs
+- Tasks linked to customers
+- Task status management
+- Role rules:
+  - ADMIN: view all tasks, create tasks, update any task
+  - EMPLOYEE: view only assigned tasks, update own task status
 
-```bash
-# unit tests
-$ npm run test
+---
+## Setup Instructions (Local)
 
-# e2e tests
-$ npm run test:e2e
+1. Clone the repository
+git clone <YOUR_GITHUB_REPO_URL>
+cd mini-crm-backend
 
-# test coverage
-$ npm run test:cov
-```
+2. Install dependencies
+npm install
 
-## Deployment
+3. Environment variables
+cp .env.example .env
+Update values as needed.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+4. Database setup
+Ensure PostgreSQL is running, then run:
+npx prisma db push
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+5. Start the server
+npm run start:dev
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Server will run on:
+http://localhost:3000
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Swagger API Documentation
 
-## Resources
+Swagger is available at:
+http://localhost:3000/api
 
-Check out a few resources that may come in handy when working with NestJS:
+How to authorize in Swagger:
+- Login using /auth/login
+- Copy the accessToken
+- Click Authorize (lock icon)
+- Paste token as:
+Bearer <your_token>
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Demo Credentials (For Testing)
 
-## Support
+These are demo/testing credentials only.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+ADMIN
+Email: admin@test.com
+Password: password123
 
-## Stay in touch
+EMPLOYEE
+Email: employee2@test.com
+Password: password123
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Sample Curl Commands
 
-## License
+Register User
+curl -X POST http://localhost:3000/auth/register \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Admin User",
+  "email": "admin@test.com",
+  "password": "password123",
+  "role": "ADMIN"
+}'
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Login
+curl -X POST http://localhost:3000/auth/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "admin@test.com",
+  "password": "password123"
+}'
+
+Create Customer (ADMIN)
+curl -X POST http://localhost:3000/customers \
+-H "Authorization: Bearer <ADMIN_TOKEN>" \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Acme Corp",
+  "email": "contact@acme.com",
+  "phone": "9999999999"
+}'
+
+## Architecture Overview
+- Controllers: HTTP request handling
+- Services: business logic
+- DTOs: validation and request contracts
+- Guards: authentication and role-based authorization
+- Prisma: database access layer
+
+Clean modular structure following NestJS best practices.
+
+## Docker & Deployment
+Docker support is included.
+Render deployment URL will be added here:
+Deployment URL: <TO_BE_UPDATED>
+
+## Notes
+- Proper HTTP status codes are used: 400, 401, 403, 404, 409
+- Passwords are never returned in API responses
+- JWT payload includes user ID and role
+
+## Author
+Built by Pankaj Rana
+Backend Developer Intern Candidate
