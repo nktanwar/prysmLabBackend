@@ -52,32 +52,32 @@ This project was built as part of the **Prysm Labs – Backend Developer Intern 
 ---
 ## Setup Instructions (Local)
 
-1. Clone the repository
+### 1. Clone the repository
 ```bash
 git clone <https://github.com/nktanwar/prysmLabBackend.git>
 cd mini-crm-backend
 ```
 
-2. Install dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-3. Environment variables
+### 3. Environment variables
 
 ```bash
 cp .env.example .env
 ```
 Update values as needed.
 
-4. Database setup
+### 4. Database setup
 Ensure PostgreSQL is running, then run:
 ```bash
 npx prisma db push
 ```
 
-5. Start the server
+### 5. Start the server
 ```bash
 npm run start:dev
 ```
